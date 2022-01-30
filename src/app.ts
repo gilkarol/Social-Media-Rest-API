@@ -10,7 +10,7 @@ const app = express()
 
 app.use(bodyparser.json())
 
-app.use(authRoutes)
+app.use('auth', authRoutes)
 app.use(messagesRoutes)
 
 app.use((error: Err, req: Request, res: Response, next: NextFunction) => {
