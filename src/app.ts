@@ -1,17 +1,19 @@
 import express, { NextFunction, Request, Response } from 'express'
 import mongoose from 'mongoose'
 import bodyparser from 'body-parser'
+import dotenv from 'dotenv'
 
 import authRoutes from './routes/auth'
 import messagesRoutes from './routes/messages'
 import { Err } from './util/interfaces'
 
+dotenv.config({ path: './.env' })
 const app = express()
 
 app.use(bodyparser.json())
 
-app.use('auth', authRoutes)
-app.use(messagesRoutes)
+app.use('/auth', authRoutes)
+app.use('/messages', messagesRoutes)
 
 app.use((error: Err, req: Request, res: Response, next: NextFunction) => {
 	const status: number = error.status || 500
@@ -19,4 +21,11 @@ app.use((error: Err, req: Request, res: Response, next: NextFunction) => {
 	res.status(status).json({ message: message })
 })
 
-mongoose.connect(process.env.DATABSE_LINK!)
+mongoose
+	.connect(process.env.DATABASE_LINK as string)
+	.then((result) => {
+		app.listen(8080)
+	})
+	.catch((err) => {
+		console.log(err)
+	})

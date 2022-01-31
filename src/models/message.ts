@@ -10,6 +10,10 @@ const messageSchema = new Schema(
 			type: Schema.Types.ObjectId,
 			required: true,
 		},
+		creatorNickname: {
+			type: String,
+			required: true
+		}
 	},
 	{ timestamps: true }
 )

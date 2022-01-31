@@ -1,4 +1,4 @@
-import { NextFunction, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
 
@@ -12,8 +12,9 @@ export const signup = async (req: Req, res: Response, next: NextFunction) => {
 
 	try {
 		const emailExists = await User.findOne({ email: email })
-		if (emailExists) {
-			const error: Err = new Error('This email already exists!')
+		const nicknameExists = await User.findOne({ nickname: nickname })
+		if (emailExists || nicknameExists) {
+			const error: Err = new Error('This email or nickname already exists!')
 			error.status = 409
 			throw error
 		}

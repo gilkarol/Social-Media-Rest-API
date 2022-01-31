@@ -14,22 +14,24 @@ export const getMessages = async (req: Req, res: Response, next: NextFunction) =
 }
 
 export const postMessages = async (req: Req, res: Response, next: NextFunction) => {
-    const userId: number = req.userId
+    const userId: number = req.userId!
     const text: string = req.body.text
 
     try {
-        const message = new Message({
-            message: text,
-            creatorId: userId
-        })
-        await message.save()
         const user = await User.findById(userId)
         if (!user) {
             const error: Err = new Error('User is not authenticated!')
             error.status = 401
             throw error
         }
+        const message = new Message({
+            message: text,
+            creatorId: userId,
+            creatorNickname: user.nickname
+        })
+        await message.save()
         await user.messages.push(message)
+        await user.save()
         res.status(201).json({message: 'Message has been posted successfully!'})
     } catch (err) {
         next(err)

@@ -5,5 +5,5 @@ export interface Err extends Error {
 }
 
 export interface Req extends Request {
-	userId: number
+	userId?: number
 }
