@@ -1,11 +1,13 @@
 import { Router } from 'express'
 
-import { getMessages, postMessages, patchMessage, deleteMessage, getMessage } from '../controllers/messages'
+import { getMessages, postMessages, patchMessage, deleteMessage, getMessage, getUserMessages } from '../controllers/messages'
 import isAuth from '../middleware/is-auth'
 
 const router = Router()
 
 router.get('/', isAuth, getMessages)
+
+router.get('/userMessages/:nickname', isAuth, getUserMessages)
 
 router.get('/:messageId', isAuth, getMessage)
 

@@ -11,6 +11,9 @@ export const getMessages = async (
 ) => {
 	try {
 		const messages = await Message.find()
+		if (messages.length == 0) {
+			return res.status(200).json({message: 'There are no messages!', messages: []})
+		}
 		res
 			.status(200)
 			.json({ message: 'Messages found successfully!', messages: messages })
@@ -38,6 +41,19 @@ export const getMessage = async (
 				message: 'Message has been found successfully!',
 				singleMessage: message,
 			})
+	} catch (err) {
+		next(err)
+	}
+}
+
+export const getUserMessages = async (req: Req, res: Response, next: NextFunction) => {
+	const nickname = req.params.nickname
+	try {
+		const userMessages = await Message.find({creatorNickname: nickname})
+		if (userMessages.length == 0) {
+			return res.status(200).json({message: 'User has no messages!', messages: []})
+		}
+		res.status(200).json({message: 'Messages found successfully!', messages: userMessages})
 	} catch (err) {
 		next(err)
 	}
