@@ -19,6 +19,30 @@ export const getMessages = async (
 	}
 }
 
+export const getMessage = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const messageId: string = req.params.messageId
+	try {
+		const message = await Message.findById(messageId)
+		if (!message) {
+			const error: Err = new Error('Message has not been found!')
+			error.status = 404
+			throw error
+		}
+		res
+			.status(200)
+			.json({
+				message: 'Message has been found successfully!',
+				singleMessage: message,
+			})
+	} catch (err) {
+		next(err)
+	}
+}
+
 export const postMessages = async (
 	req: Req,
 	res: Response,
@@ -89,11 +113,11 @@ export const deleteMessage = async (
 	try {
 		const message = await Message.findOne({ _id: messageId })
 		const user = await User.findById(userId)
-        if (!message) {
-            const error: Err = new Error('Message has not been found!')
+		if (!message) {
+			const error: Err = new Error('Message has not been found!')
 			error.status = 404
 			throw error
-        }
+		}
 		if (!user) {
 			const error: Err = new Error('User is not authenticated!')
 			error.status = 401
@@ -106,7 +130,7 @@ export const deleteMessage = async (
 		}
 		await Message.findByIdAndDelete(messageId)
 		await user.messages.pull(message)
-        await user.save()
+		await user.save()
 		res.status(200).json({ message: 'Message has been deleted successfully!' })
 	} catch (err) {
 		next(err)
