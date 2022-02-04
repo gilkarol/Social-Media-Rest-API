@@ -15,7 +15,8 @@ export const signup = async (req: Req, res: Response, next: NextFunction) => {
 		const emailExists = await User.findOne({ email: email })
 		const nicknameExists = await User.findOne({ nickname: nickname })
 
-		if (emailExists || nicknameExists) throw new Err(409, 'This email or nickname already exists!') 
+		if (emailExists) throw new Err(409, 'This email already exists!')
+		if (nicknameExists) throw new Err(409, 'This nickname is already taken!')
 
 		const hashedPassword: string = await bcrypt.hash(password, 12)
 		const user = new User({
@@ -36,14 +37,15 @@ export const login = async (req: Req, res: Response, next: NextFunction) => {
 
 	try {
 		const user = await User.findOne({ email: email })
-		if (!user) throw new Err(404, 'User does not exist!') 
+		if (!user) throw new Err(404, 'User does not exist!')
 
 		const isEqual: boolean = await bcrypt.compare(password, user.password)
-		if (!isEqual) throw new Err(409, 'Password does not match!') 
+		if (!isEqual) throw new Err(409, 'Password does not match!')
 
 		const token = jwt.sign(
 			{ email: email, userId: user._id },
-			process.env.JWT_TOKEN!, {expiresIn: '1h'}
+			process.env.JWT_TOKEN!,
+			{ expiresIn: '1h' }
 		)
 		res
 			.status(200)

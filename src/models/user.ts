@@ -15,12 +15,17 @@ const userSchema = new Schema({
 		type: String,
 		required: true,
 	},
+	imageUrl: String,
 	messages: [
 		{
 			type: Schema.Types.ObjectId,
             ref: 'Message'
 		},
 	],
+	privateMessages: [{
+		type: Schema.Types.ObjectId,
+		ref: 'User'
+	}]
 })
 
 export default mongoose.model('User', userSchema)

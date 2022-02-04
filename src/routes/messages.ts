@@ -5,6 +5,8 @@ import isAuth from '../middleware/is-auth'
 
 const router = Router()
 
+// CHAT FOR EVERYONE
+
 router.get('/', isAuth, getMessages)
 
 router.get('/userMessages/:nickname', isAuth, getUserMessages)

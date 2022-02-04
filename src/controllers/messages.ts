@@ -11,7 +11,7 @@ export const getMessages = async (
 	next: NextFunction
 ) => {
 	try {
-		const messages = await Message.find()
+		const messages = await Message.find().sort({createdAt: 1})
 		if (messages.length == 0) {
 			return res
 				.status(200)
@@ -32,7 +32,7 @@ export const getMessage = async (
 ) => {
 	const messageId: string = req.params.messageId
 	try {
-		const message = await Message.findById(messageId)
+		const message = await Message.findById(messageId).sort({createdAt: 1})
 		if (!message) throw new Err(404, 'Message has not been found!')
 
 		res.status(200).json({
@@ -128,7 +128,7 @@ export const deleteMessage = async (
 	try {
 		const message = await Message.findOne({ _id: messageId })
 		const user = await User.findById(userId)
-		
+
 		if (!message) throw new Err(404, 'Message has not been found!') 
 		if (!user) throw new Err(401, 'User is not authenticated!')  
 		if (message.creatorId.toString() != userId.toString()) throw new Err(409, 'This user is not the creator of message!') 
