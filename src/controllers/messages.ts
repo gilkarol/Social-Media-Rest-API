@@ -70,7 +70,7 @@ export const postMessages = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const userId: number = req.userId!
+	const userId: string = req.userId!
 	const text: string = req.body.text
 
 	try {
@@ -97,7 +97,7 @@ export const patchMessage = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const userId: number = req.userId!
+	const userId: string = req.userId!
 	const messageId: string = req.params.messageId
 	const text: string = req.body.text
 
@@ -122,7 +122,7 @@ export const deleteMessage = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const userId: number = req.userId!
+	const userId: string = req.userId!
 	const messageId: string = req.params.messageId
 
 	try {

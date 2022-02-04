@@ -1,7 +1,7 @@
 import { NextFunction, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { Err } from '../util/classes'
 
+import { Err } from '../util/classes'
 import { Req } from '../util/interfaces'
 
 export default (req: Req, res: Response, next: NextFunction) => {
@@ -11,10 +11,10 @@ export default (req: Req, res: Response, next: NextFunction) => {
 
 	const unhashedToken = jwt.verify(token, process.env.JWT_TOKEN!) as {
 		email: string
-		userId: number
+		userId: string
 	}
 	if (!unhashedToken.userId) throw new Err(401, 'Not authenticated!')
 
-	req.userId = unhashedToken.userId
+	req.userId = unhashedToken.userId!
 	next()
 }
