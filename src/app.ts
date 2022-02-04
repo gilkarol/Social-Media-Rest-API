@@ -4,6 +4,7 @@ import bodyparser from 'body-parser'
 import dotenv from 'dotenv'
 
 import authRoutes from './routes/auth'
+import profileRoutes from './routes/profile'
 import messagesRoutes from './routes/messages'
 import { Err } from './util/interfaces'
 
@@ -12,6 +13,7 @@ const app = express()
 
 app.use(bodyparser.json())
 
+app.use('/profile', profileRoutes)
 app.use('/auth', authRoutes)
 app.use('/messages', messagesRoutes)
 
