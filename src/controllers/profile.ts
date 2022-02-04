@@ -1,6 +1,7 @@
 import { NextFunction, Response } from 'express'
 import User from '../models/user'
-import { Err, Req } from '../util/interfaces'
+import { Err } from '../util/classes'
+import { Req } from '../util/interfaces'
 
 export const getProfile = async (
 	req: Req,
@@ -11,11 +12,8 @@ export const getProfile = async (
 
 	try {
 		const user = await User.findById(userId)
-		if (!user) {
-			const error: Err = new Error('This user doest not exist!')
-			error.status = 404
-			throw error
-		}
+		if (!user) throw new Err(404, 'Thgis user does not exist!')
+        
 		res.status(200).json({ message: 'User has been found!', user: user })
 	} catch (err) {
 		next(err)

@@ -6,7 +6,7 @@ import dotenv from 'dotenv'
 import authRoutes from './routes/auth'
 import profileRoutes from './routes/profile'
 import messagesRoutes from './routes/messages'
-import { Err } from './util/interfaces'
+import { Err } from './util/classes'
 
 dotenv.config({ path: './.env' })
 const app = express()
@@ -16,6 +16,13 @@ app.use(bodyparser.json())
 app.use('/profile', profileRoutes)
 app.use('/auth', authRoutes)
 app.use('/messages', messagesRoutes)
+
+
+app.use((error: Err, req: Request, res: Response, next: NextFunction) => {
+	const status: number = error.status || 500
+	const message: string = error.message
+	res.status(status).json({ message: message })
+})
 
 app.use((error: Err, req: Request, res: Response, next: NextFunction) => {
 	const status: number = error.status || 500
