@@ -1,11 +1,12 @@
 import { Router } from 'express'
 
-import { getProfile, postInviteToFriends } from '../controllers/profile'
+import { getProfile, getFriends } from '../controllers/profile'
+import isAuth from '../middleware/is-auth'
 
 const router = Router()
 
-router.get('/:profileUserId', getProfile)
+router.get('/:profileId', isAuth, getProfile)
 
-router.post('/inviteToFriends/:profileUserId', postInviteToFriends)
+router.get('/friends/:profileId', isAuth, getFriends)
 
 export default router

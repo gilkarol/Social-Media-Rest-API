@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 
 import authRoutes from './routes/auth'
 import profileRoutes from './routes/profile'
-import privateMessageRoutes from './routes/message'
+
 import { Err } from './util/classes'
 
 dotenv.config({ path: './.env' })
@@ -15,7 +15,6 @@ app.use(bodyparser.json())
 
 app.use('/profile', profileRoutes)
 app.use('/auth', authRoutes)
-app.use('/messages/private', privateMessageRoutes)
 
 
 app.use((error: Err, req: Request, res: Response, next: NextFunction) => {

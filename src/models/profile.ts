@@ -5,17 +5,34 @@ const profileSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		required: true,
 		ref: 'User',
-		unique: true,
+		unique: true
 	},
 	nickname: {
 		type: String,
 		required: true,
+		unique: true
 	},
 	imageUrl: String,
 	blockedUsers: [
 		{
 			type: Schema.Types.ObjectId,
 			ref: 'User',
+		},
+	],
+	friends: [{
+		type: Schema.Types.ObjectId,
+		ref: 'Profile'
+	}],
+    profilesWhoInvited: [
+        {
+            type: Schema.Types.ObjectId,
+			ref: 'Profile',
+        }
+    ],
+	invitedProfiles: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Profile',
 		},
 	],
 	Messages: [

@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { getMessages } from '../controllers/messages'
+import { getMessages } from '../controllers/message'
 import isAuth from '../middleware/is-auth'
 
 const router = Router()

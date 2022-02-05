@@ -12,9 +12,11 @@ export default (req: Req, res: Response, next: NextFunction) => {
 	const unhashedToken = jwt.verify(token, process.env.JWT_TOKEN!) as {
 		email: string
 		userId: string
+		profileId: string
 	}
 	if (!unhashedToken.userId) throw new Err(401, 'Not authenticated!')
 
 	req.userId = unhashedToken.userId!
+	req.profileId = unhashedToken.profileId!
 	next()
 }
