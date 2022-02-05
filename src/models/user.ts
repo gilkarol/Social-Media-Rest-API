@@ -6,32 +6,14 @@ const userSchema = new Schema({
 		required: true,
 		unique: true
 	},
-	nickname: {
-		type: String,
-		required: true,
-		unique: true
-	},
 	password: {
 		type: String,
 		required: true,
 	},
-	friends: [
-		{
-			type: Schema.Types.ObjectId,
-			ref: 'User'
-		}
-	],
-	imageUrl: String,
-	messages: [
-		{
-			type: Schema.Types.ObjectId,
-            ref: 'Message'
-		},
-	],
-	privateMessages: [{
+	profile: {
 		type: Schema.Types.ObjectId,
-		ref: 'User'
-	}]
+		unique: true
+	}
 })
 
 export default mongoose.model('User', userSchema)

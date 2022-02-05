@@ -9,13 +9,21 @@ export const getProfile = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const userId = req.params.userId
+	const userId: string = req.userId!
+	const profileUserId: string = req.params.profileUserId
 
 	try {
 		const user = await User.findById(userId)
-		if (!user) throw new Err(404, 'Thgis user does not exist!')
+		if (!user) throw new Err(404, 'This user does not exist!')
 
-		res.status(200).json({ message: 'User has been found!', user: user })
+		res
+			.status(200)
+			.json({
+				message: 'User has been found!',
+				user: user,
+				isSameUser: userId.toString() === profileUserId.toString(),
+
+			})
 	} catch (err) {
 		next(err)
 	}
@@ -26,11 +34,10 @@ export const postInviteToFriends = async (
 	res: Response,
 	next: NextFunction
 ) => {
-	const userId: string = req.params.userId
-	const loggedUserId: string = req.userId!
+	const userId: string = req.userId!
+	const profileUserId: string = req.params.profileUserId
 
 	try {
-		const isFriend = User.findById(loggedUserId)
 	} catch (err) {
 		next(err)
 	}

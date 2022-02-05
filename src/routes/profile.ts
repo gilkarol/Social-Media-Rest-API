@@ -4,8 +4,8 @@ import { getProfile, postInviteToFriends } from '../controllers/profile'
 
 const router = Router()
 
-router.get('/:userId', getProfile)
+router.get('/:profileUserId', getProfile)
 
-router.post('/inviteToFriends/:userId', postInviteToFriends)
+router.post('/inviteToFriends/:profileUserId', postInviteToFriends)
 
 export default router
