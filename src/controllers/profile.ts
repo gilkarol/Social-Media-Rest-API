@@ -1,5 +1,4 @@
 import { NextFunction, Response } from 'express'
-import { Schema } from 'mongoose'
 
 import Profile from '../models/profile'
 import { Err } from '../util/classes'
@@ -15,15 +14,17 @@ const hasBlocked = async (profileWhoBlockedId: string, isBlockedId: string) => {
 	return false
 }
 
-const isBlocked = async (profileWhoMightBlockId: string, isBlockedId: string) => {
-	const profileWhoMightBlock = await Profile.findById(profileWhoMightBlockId).select(
-		'blockedProfiles'
-	)
+const isBlocked = async (
+	profileWhoMightBlockId: string,
+	isBlockedId: string
+) => {
+	const profileWhoMightBlock = await Profile.findById(
+		profileWhoMightBlockId
+	).select('blockedProfiles')
 	if (profileWhoMightBlock.blockedProfiles.indexOf(isBlockedId) >= 0) {
 		return true
 	}
 	return false
-
 }
 
 export const getProfile = async (
@@ -34,18 +35,26 @@ export const getProfile = async (
 	const profileId: string = req.params.profileId!
 	const loggedProfileId: string = req.profileId!
 
-	
 	try {
-		if (await hasBlocked(profileId, loggedProfileId)) throw new Err(409, 'User has blocked you!')
-		if (await isBlocked(loggedProfileId, profileId)) throw new Err(409, 'You blocked this user!')
-		
+		if (await hasBlocked(profileId, loggedProfileId))
+			throw new Err(409, 'User has blocked you!')
+		if (await isBlocked(loggedProfileId, profileId))
+			throw new Err(409, 'You blocked this user!')
+
 		const profile = await Profile.findById(profileId)
+		const loggedProfile = await Profile.findById(loggedProfileId)
 		if (!profile) throw new Err(404, 'This profile does not exist!')
+		const isFriend = loggedProfile.friends.indexOf(profileId) >= 0
+		const isInvited = loggedProfile.invitedProfiles.indexOf(profileId) >= 0
+		const hasInvited = profile.invitedProfiles.indexOf(loggedProfileId) >= 0
 
 		res.status(200).json({
 			message: 'Profile has been found!',
 			profile: profile,
 			isSameUser: profileId.toString() === loggedProfileId.toString(),
+			isFriend: isFriend,
+			isInvited: isInvited,
+			hasInvited: hasInvited,
 		})
 	} catch (err) {
 		next(err)
@@ -61,8 +70,10 @@ export const getFriends = async (
 	const loggedProfileId: string = req.profileId!
 
 	try {
-		if (await hasBlocked(profileId, loggedProfileId)) throw new Err(409, 'User has blocked you!')
-		if (await isBlocked(loggedProfileId, profileId)) throw new Err(409, 'You blocked this user!')
+		if (await hasBlocked(profileId, loggedProfileId))
+			throw new Err(409, 'User has blocked you!')
+		if (await isBlocked(loggedProfileId, profileId))
+			throw new Err(409, 'You blocked this user!')
 
 		const profile = await Profile.findById(profileId)
 			.select('friends')
@@ -85,14 +96,37 @@ export const inviteToFriends = async (
 	const profileId: string = req.params.profileId
 	const loggedProfileId: string = req.profileId!
 	try {
-		if (await hasBlocked(profileId, loggedProfileId)) throw new Err(409, 'User has blocked you!')
-		if (await isBlocked(loggedProfileId, profileId)) throw new Err(409, 'You blocked this user!')
-		
+		if (await hasBlocked(profileId, loggedProfileId))
+			throw new Err(409, 'User has blocked you!')
+		if (await isBlocked(loggedProfileId, profileId))
+			throw new Err(409, 'You blocked this user!')
+
 		if (profileId.toString() === loggedProfileId.toString())
 			throw new Err(409, 'You can not add yourself to friends!')
-		const profile = Profile.findById(profileId)
-		const loggedProfile = Profile.findById(loggedProfileId)
+
+		const profile = await Profile.findById(profileId)
+		const loggedProfile = await Profile.findById(loggedProfileId)
+		if (loggedProfile.invitedProfiles.indexOf(profileId) >= 0)
+			throw new Err(409, 'You already invited this profile to friends!')
+		if (loggedProfile.friends.indexOf(profileId) >= 0)
+			throw new Err(409, 'This profile is already your friend!')
+		if (profile.invitedProfiles.indexOf(loggedProfileId) >= 0) {
+			profile.invitedProfiles.pull(loggedProfile)
+			await profile.save()
+			return res
+				.status(200)
+				.json({
+					message: 'This profile invited you earlier so now is your friend!',
+				})
+		}
+
+		loggedProfile.invitedProfiles.push(profile)
+		await loggedProfile.save()
+		res
+			.status(200)
+			.json({ message: 'User has been succesffully invited to your friends!' })
+			
 	} catch (err) {
-		next
+		next(err)
 	}
 }
