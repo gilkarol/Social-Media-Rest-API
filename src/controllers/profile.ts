@@ -110,8 +110,12 @@ export const inviteToFriends = async (
 			throw new Err(409, 'You already invited this profile to friends!')
 		if (loggedProfile.friends.indexOf(profileId) >= 0)
 			throw new Err(409, 'This profile is already your friend!')
+
 		if (profile.invitedProfiles.indexOf(loggedProfileId) >= 0) {
 			profile.invitedProfiles.pull(loggedProfile)
+			loggedProfile.friends.push(profile)
+			profile.friends.push(loggedProfile)
+			await loggedProfile.save()
 			await profile.save()
 			return res
 				.status(200)
@@ -125,7 +129,6 @@ export const inviteToFriends = async (
 		res
 			.status(200)
 			.json({ message: 'User has been succesffully invited to your friends!' })
-			
 	} catch (err) {
 		next(err)
 	}
