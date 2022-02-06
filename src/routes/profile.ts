@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { getProfile, getFriends, postInviteToFriends, postAcceptInviteToFriends, getInvitedFriends, deleteRemoveFromFriends } from '../controllers/profile'
+import { getProfile, getFriends, postInviteToFriends, postAcceptInviteToFriends, deleteRemoveInviteToFriends, deleteDeclineInviteToFriends, getInvitedFriends, deleteRemoveFromFriends } from '../controllers/profile'
 import isAuth from '../middleware/is-auth'
 
 const router = Router()
@@ -17,6 +17,9 @@ router.post('/friends/accept/:profileId', isAuth, postAcceptInviteToFriends)
 
 router.delete('/friends/remove/:profileId', isAuth, deleteRemoveFromFriends)
 
-router.delete('/friends/remove/:profileId', isAuth, deleteRemoveFromFriends)
+router.delete('/friends/declineInvite/:profileId', isAuth, deleteDeclineInviteToFriends)
+
+router.delete('/friends/removeInvite/:profileId', isAuth, deleteRemoveInviteToFriends)
+
 
 export default router
