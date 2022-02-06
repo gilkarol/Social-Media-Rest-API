@@ -13,10 +13,10 @@ const profileSchema = new Schema({
 		unique: true
 	},
 	imageUrl: String,
-	blockedUsers: [
+	blockedProfiles: [
 		{
 			type: Schema.Types.ObjectId,
-			ref: 'User',
+			ref: 'Profile',
 		},
 	],
 	friends: [{
