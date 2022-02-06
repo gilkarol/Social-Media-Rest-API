@@ -27,6 +27,8 @@ const isBlocked = async (
 	return false
 }
 
+// ------------------------------------- PROFILES -------------------------------------
+
 export const getProfile = async (
 	req: Req,
 	res: Response,
@@ -60,6 +62,8 @@ export const getProfile = async (
 		next(err)
 	}
 }
+
+// ------------------------------------- FRIENDS -------------------------------------
 
 export const getFriends = async (
 	req: Req,
@@ -283,3 +287,4 @@ export const deleteRemoveFromFriends = async (
 		next(err)
 	}
 }
+

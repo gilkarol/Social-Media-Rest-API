@@ -13,6 +13,12 @@ const profileSchema = new Schema({
 		unique: true
 	},
 	imageUrl: String,
+	posts: [
+		{
+			type: Schema.Types.ObjectId, 
+			ref: 'Post'
+		}
+	],
 	blockedProfiles: [
 		{
 			type: Schema.Types.ObjectId,
