@@ -88,7 +88,22 @@ export const getFriends = async (
 	}
 }
 
-export const inviteToFriends = async (
+export const getInvitedFriends = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const loggedProfileId: string = req.profileId!
+	try {
+		const profile = await Profile.findById(loggedProfileId)
+		const invitedFriends = profile.invitedFriends
+		res.status(200).json({message: 'Invited users found successfully!', invitedFriends: invitedFriends})
+	} catch (err) {
+		next(err)
+	}
+}
+
+export const postInviteToFriends = async (
 	req: Req,
 	res: Response,
 	next: NextFunction
@@ -117,11 +132,9 @@ export const inviteToFriends = async (
 			profile.friends.push(loggedProfile)
 			await loggedProfile.save()
 			await profile.save()
-			return res
-				.status(200)
-				.json({
-					message: 'This profile invited you earlier so now is your friend!',
-				})
+			return res.status(200).json({
+				message: 'This profile invited you earlier so now is your friend!',
+			})
 		}
 
 		loggedProfile.invitedProfiles.push(profile)
@@ -129,6 +142,39 @@ export const inviteToFriends = async (
 		res
 			.status(200)
 			.json({ message: 'User has been succesffully invited to your friends!' })
+	} catch (err) {
+		next(err)
+	}
+}
+
+export const deleteRemoveFromFriends = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const profileId: string = req.params.profileId
+	const loggedProfileId: string = req.profileId!
+	try {
+		if (await hasBlocked(profileId, loggedProfileId))
+			throw new Err(409, 'User has blocked you!')
+		if (await isBlocked(loggedProfileId, profileId))
+			throw new Err(409, 'You blocked this user!')
+
+		const profile = await Profile.findById(profileId)
+		const loggedProfile = await Profile.findById(loggedProfileId)
+		if (loggedProfile.friends.indexOf(profileId) == -1)
+			throw new Err(409, 'This profile is not your friend!')
+
+		profile.friends.pull(loggedProfile)
+		loggedProfile.friends.pull(profile)
+		await profile.save()
+		await loggedProfile.save()
+
+		res
+			.status(200)
+			.json({
+				message: 'Profile has been successfully removed from your friends!',
+			})
 	} catch (err) {
 		next(err)
 	}
