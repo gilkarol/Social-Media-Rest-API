@@ -1,9 +1,16 @@
 import mongoose, { Schema } from 'mongoose'
 
-const privateMessageSchema = new Schema(
+const messageSchema = new Schema(
 	{
-        
-    }
+		profile: {
+			type: Schema.Types.ObjectId,
+			ref: 'Profile',
+		},
+		message: {
+			type: String,
+		},
+	},
+	{ timestamps: true }
 )
 
-export default mongoose.model('Message', privateMessageSchema)
+export default mongoose.model('Message', messageSchema)

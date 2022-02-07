@@ -8,7 +8,15 @@ export const getFriendsPosts = async (
 	req: Req,
 	res: Response,
 	next: NextFunction
-) => {}
+) => {
+	const profileId: string = req.profileId!
+	try {
+		
+		
+	} catch (err) {
+		next(err)
+	}
+}
 
 export const postPost = async (req: Req, res: Response, next: NextFunction) => {
 	const text = req.body.text
@@ -20,7 +28,9 @@ export const postPost = async (req: Req, res: Response, next: NextFunction) => {
 			text: text,
 		})
 		profile.posts.push(post)
+		await post.save()
 		await profile.save()
+		res.status(200).json({ message: 'Post created successfully!' })
 	} catch (err) {
 		next(err)
 	}

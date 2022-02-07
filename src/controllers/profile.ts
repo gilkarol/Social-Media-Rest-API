@@ -116,7 +116,6 @@ export const getInvitationsToFriends = async (
 	next: NextFunction
 ) => {
 	const profileId: string = req.profileId!
-	console.log(profileId)
 	try {
 		const profile = await Profile.findById(profileId)
 		const invitations = profile.profilesWhoInvited || []
