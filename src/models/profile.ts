@@ -44,7 +44,7 @@ const profileSchema = new Schema({
 	Messages: [
 		{
 			type: Schema.Types.ObjectId,
-			ref: 'Message',
+			ref: 'PrivateChat',
 		},
 	],
 })

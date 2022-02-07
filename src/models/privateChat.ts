@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
 
-const chatSchema = new Schema({
+const privateChatSchema = new Schema({
     participants: [{
         type: Schema.Types.ObjectId,
         ref: 'Profile'
@@ -11,4 +11,4 @@ const chatSchema = new Schema({
     }] 
 })
 
-export default mongoose.model('Chat', chatSchema)
+export default mongoose.model('PrivateChat', privateChatSchema)
