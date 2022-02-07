@@ -100,12 +100,31 @@ export const getInvitedFriends = async (
 	const loggedProfileId: string = req.profileId!
 	try {
 		const profile = await Profile.findById(loggedProfileId)
-		const invitedFriends = profile.invitedFriends
+		const invitedFriends = profile.invitedFriends || []
+		res.status(200).json({
+			message: 'Invited users found successfully!',
+			invitedFriends: invitedFriends,
+		})
+	} catch (err) {
+		next(err)
+	}
+}
+
+export const getInvitationsToFriends = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const profileId: string = req.profileId!
+	console.log(profileId)
+	try {
+		const profile = await Profile.findById(profileId)
+		const invitations = profile.profilesWhoInvited || []
 		res
 			.status(200)
 			.json({
-				message: 'Invited users found successfully!',
-				invitedFriends: invitedFriends,
+				message: 'Invitations found successfully!',
+				invitations: invitations,
 			})
 	} catch (err) {
 		next(err)
@@ -138,7 +157,7 @@ export const postInviteToFriends = async (
 		if (profile.invitedProfiles.indexOf(loggedProfileId) >= 0) {
 			loggedProfile.profilesWhoInvited.pull(profile)
 			loggedProfile.friends.push(profile)
-			
+
 			profile.invitedProfiles.pull(loggedProfile)
 			profile.friends.push(loggedProfile)
 
@@ -179,13 +198,13 @@ export const postAcceptInviteToFriends = async (
 
 		const profile = await Profile.findById(profileId)
 		const loggedProfile = await Profile.findById(loggedProfileId)
-		if (profile.invitedFriends.indexOf(loggedProfileId) == -1)
+		if (profile.invitedProfiles.indexOf(loggedProfileId) == -1)
 			throw new Err(409, 'This user did not invite you to friends!')
 
-		profile.invitedFriends.pull(loggedProfile)
+		profile.invitedProfiles.pull(loggedProfile)
 		profile.friends.push(loggedProfile)
 
-		loggedProfile.profilesWhoInvited.pull(loggedProfile)
+		loggedProfile.profilesWhoInvited.pull(profile)
 		loggedProfile.friends.push(profile)
 
 		await profile.save()
@@ -221,7 +240,7 @@ export const deleteDeclineInviteToFriends = async (
 		profile.save()
 		loggedProfile.save()
 
-		res.status(200).json({message: 'Invite has been successfully declined!'})
+		res.status(200).json({ message: 'Invite has been successfully declined!' })
 	} catch (err) {
 		next(err)
 	}
@@ -240,17 +259,16 @@ export const deleteRemoveInviteToFriends = async (
 		if (await isBlocked(loggedProfileId, profileId))
 			throw new Err(409, 'You blocked this user!')
 
-
 		const profile = await Profile.findById(profileId)
 		const loggedProfile = await Profile.findById(loggedProfileId)
 
-		loggedProfile.invitedFriends.pull(profile)
+		loggedProfile.invitedProfiles.pull(profile)
 		profile.profilesWhoInvited.pull(loggedProfile)
 
 		await loggedProfile.save()
 		await profile.save()
 
-		res.status(200).json({message: 'Invite has been removed successfully!'})
+		res.status(200).json({ message: 'Invite has been removed successfully!' })
 	} catch (err) {
 		next(err)
 	}
@@ -282,9 +300,7 @@ export const deleteRemoveFromFriends = async (
 		res.status(200).json({
 			message: 'Profile has been successfully removed from your friends!',
 		})
-
 	} catch (err) {
 		next(err)
 	}
 }
-
