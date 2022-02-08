@@ -1,6 +1,7 @@
 import { NextFunction, Response } from 'express'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import { validationResult } from 'express-validator'
 
 import { Err } from '../util/classes'
 import { Req } from '../util/interfaces'
@@ -11,6 +12,14 @@ export const signup = async (req: Req, res: Response, next: NextFunction) => {
 	const email: string = req.body.email
 	const nickname: string = req.body.nickname
 	const password: string = req.body.password
+
+	const errors = validationResult(req)
+	if (!errors.isEmpty()) {
+		const errorsArray: string = errors.array().join(' ')
+		const error = new Err(422, errorsArray)
+		throw error
+	}
+
 	try {
 		const emailExists = await User.findOne({ email: email.toString() })
 		const nicknameExists = await Profile.findOne({ nickname: nickname })
@@ -39,6 +48,13 @@ export const signup = async (req: Req, res: Response, next: NextFunction) => {
 export const login = async (req: Req, res: Response, next: NextFunction) => {
 	const email: string = req.body.email
 	const password: string = req.body.password
+
+	const errors = validationResult(req)
+	if (!errors.isEmpty()) {
+		const errorsArray: string = errors.array().join(' ')
+		const error = new Err(422, errorsArray)
+		throw error
+	}
 
 	try {
 		const user = await User.findOne({ email: email })

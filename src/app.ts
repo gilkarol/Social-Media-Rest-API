@@ -18,7 +18,6 @@ app.use(bodyparser.json())
 
 app.use('/profile', profileRoutes)
 app.use('/auth', authRoutes)
-
 app.use('/chat', privateChatRoutes)
 app.use('/post', postRoutes)
 
