@@ -36,9 +36,9 @@ export const postMessage = async (
 		})
 		if (!chat) throw new Err(404, 'This chat does not exist!')
 		const message = new Message({
-			profile: loggedProfileId,
+			profileCreator: loggedProfileId,
 			message: text,
-			messageTo: profileId,
+			messageToProfile: profileId,
 		})
 		chat.messages.push(message)
 		await message.save()

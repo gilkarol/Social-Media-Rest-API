@@ -2,17 +2,21 @@ import mongoose, { Schema } from 'mongoose'
 
 const messageSchema = new Schema(
 	{
-		profile: {
+		profileCreator: {
 			type: Schema.Types.ObjectId,
 			ref: 'Profile',
 		},
 		message: {
 			type: String,
 		},
-		messageTo: {
+		messageToProfile: {
 			type: Schema.Types.ObjectId,
-			ref: 'Profile'
-		}
+			ref: 'Profile',
+		},
+		messageToGroup: {
+			type: Schema.Types.ObjectId,
+			ref: 'Group',
+		},
 	},
 	{ timestamps: true }
 )
