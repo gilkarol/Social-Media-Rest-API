@@ -71,3 +71,27 @@ export const patchMessage = async (
 		next(err)
 	}
 }
+
+export const deleteMessage = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const loggedProfileId: string = req.profileId!
+	const messageId: string = req.params.messageId
+
+	try {
+		const message = await Message.findById(messageId)
+		const chat = await PrivateChat.findOne({messages: message})
+		if (!chat) throw new Err(404, 'Chat not found!')
+		if (message.profile.toString() !== loggedProfileId.toString()) throw new Err(401, 'This user is not the creator of message!')
+
+		chat.messages.pull(message)
+		await message.delete()
+		await chat.save()
+		res.status(200).json({message: 'Message has been deleted successfully!'})
+
+	} catch (err) {
+		next(err)
+	}
+}
