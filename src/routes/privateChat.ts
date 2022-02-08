@@ -1,12 +1,14 @@
 import { Router } from 'express'
 
-import { getChat, postMessage } from '../controllers/privateChat'
+import { getChat, postMessage, patchMessage } from '../controllers/privateChat'
 import isAuth from '../middleware/is-auth'
 
 const router = Router()
 
-router.get('/:userId', isAuth, getChat)
+router.get('/:profileId', isAuth, getChat)
 
-router.post('/:userId', isAuth, postMessage)
+router.post('/:profileId', isAuth, postMessage)
+
+router.patch('/:messageId', isAuth, patchMessage)
 
 export default router

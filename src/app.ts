@@ -5,6 +5,8 @@ import dotenv from 'dotenv'
 
 import authRoutes from './routes/auth'
 import profileRoutes from './routes/profile'
+
+import privateChatRoutes from './routes/privateChat'
 import postRoutes from './routes/post'
 
 import { Err } from './util/classes'
@@ -17,6 +19,7 @@ app.use(bodyparser.json())
 app.use('/profile', profileRoutes)
 app.use('/auth', authRoutes)
 
+app.use('/chat', privateChatRoutes)
 app.use('/post', postRoutes)
 
 

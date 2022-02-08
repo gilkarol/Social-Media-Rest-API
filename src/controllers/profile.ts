@@ -1,4 +1,5 @@
 import { NextFunction, Response } from 'express'
+import PrivateChat from '../models/privateChat'
 
 import Profile from '../models/profile'
 import { Err } from '../util/classes'
@@ -119,12 +120,10 @@ export const getInvitationsToFriends = async (
 	try {
 		const profile = await Profile.findById(profileId)
 		const invitations = profile.profilesWhoInvited || []
-		res
-			.status(200)
-			.json({
-				message: 'Invitations found successfully!',
-				invitations: invitations,
-			})
+		res.status(200).json({
+			message: 'Invitations found successfully!',
+			invitations: invitations,
+		})
 	} catch (err) {
 		next(err)
 	}
@@ -160,6 +159,16 @@ export const postInviteToFriends = async (
 			profile.invitedProfiles.pull(loggedProfile)
 			profile.friends.push(loggedProfile)
 
+			let privateChat = await PrivateChat.findOne({
+				participants: [loggedProfile, profile],
+			})
+			if (!privateChat) {
+				privateChat = new PrivateChat({
+					participants: [loggedProfile, profile],
+				})
+			}
+
+			await privateChat.save()
 			await loggedProfile.save()
 			await profile.save()
 
@@ -206,6 +215,18 @@ export const postAcceptInviteToFriends = async (
 		loggedProfile.profilesWhoInvited.pull(profile)
 		loggedProfile.friends.push(profile)
 
+		let privateChat = await PrivateChat.findOne({
+			participants: loggedProfile,
+			profile,
+		})
+
+		if (!privateChat) {
+			privateChat = new PrivateChat({
+				participants: [loggedProfile, profile],
+			})
+		}
+
+		await privateChat.save()
 		await profile.save()
 		await loggedProfile.save()
 

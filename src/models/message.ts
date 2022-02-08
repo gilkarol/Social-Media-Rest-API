@@ -9,6 +9,10 @@ const messageSchema = new Schema(
 		message: {
 			type: String,
 		},
+		messageTo: {
+			type: Schema.Types.ObjectId,
+			ref: 'Profile'
+		}
 	},
 	{ timestamps: true }
 )

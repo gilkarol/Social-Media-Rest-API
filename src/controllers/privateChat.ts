@@ -25,21 +25,48 @@ export const postMessage = async (
 ) => {
 	const profileId: string = req.params.profileId
 	const loggedProfileId: string = req.profileId!
+	console.log(profileId)
+	console.log(loggedProfileId)
 
-    const text: string = req.body.text
+	const text: string = req.body.text
 
 	try {
 		const chat = await PrivateChat.findOne({
-			participants: { profileId, loggedProfileId },
+			participants: loggedProfileId && profileId,
 		})
-        if (!chat) throw new Err(404, 'This chat does not exist!')
-        const message = new Message({
-            profile: loggedProfileId,
-            message: text
-        })
-        chat.messages.push(message)
-        await chat.save()
-		res.status(200).json({message: 'Message has been send successfully!'})
+		if (!chat) throw new Err(404, 'This chat does not exist!')
+		const message = new Message({
+			profile: loggedProfileId,
+			message: text,
+			messageTo: profileId,
+		})
+		chat.messages.push(message)
+		await message.save()
+		await chat.save()
+		res.status(201).json({ message: 'Message has been send successfully!' })
+	} catch (err) {
+		next(err)
+	}
+}
+
+export const patchMessage = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const loggedProfileId: string = req.profileId!
+	const messageId: string = req.params.messageId
+
+	const text: string = req.body.text
+
+	try {
+		const message = await Message.findById(messageId)
+		if (!message) throw new Err(404, 'This message does not exist!')
+		if (message.profile.toString() !== loggedProfileId.toString())
+			throw new Err(401, 'This user is not the creator of message!')
+		message.update({ message: text })
+		await message.save()
+		res.status(200).json({message: 'Message updated successfully!'})
 	} catch (err) {
 		next(err)
 	}
