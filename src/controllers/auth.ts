@@ -13,14 +13,14 @@ export const signup = async (req: Req, res: Response, next: NextFunction) => {
 	const nickname: string = req.body.nickname
 	const password: string = req.body.password
 
-	const errors = validationResult(req)
-	if (!errors.isEmpty()) {
-		const errorsArray: string = errors.array().join(' ')
-		const error = new Err(422, errorsArray)
-		throw error
-	}
-
 	try {
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			const errorsArray: string = errors.array().join(' ')
+			const error = new Err(422, errorsArray)
+			throw error
+		}
+
 		const emailExists = await User.findOne({ email: email.toString() })
 		const nicknameExists = await Profile.findOne({ nickname: nickname })
 
@@ -30,11 +30,11 @@ export const signup = async (req: Req, res: Response, next: NextFunction) => {
 		const hashedPassword: string = await bcrypt.hash(password, 12)
 		const user = new User({
 			email: email,
-			password: hashedPassword
+			password: hashedPassword,
 		})
 		const profile = new Profile({
 			user: user,
-			nickname: nickname
+			nickname: nickname,
 		})
 		user.profile = profile
 		await user.save()
@@ -57,6 +57,13 @@ export const login = async (req: Req, res: Response, next: NextFunction) => {
 	}
 
 	try {
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			const errorsArray: string = errors.array().join(' ')
+			const error = new Err(422, errorsArray)
+			throw error
+		}
+
 		const user = await User.findOne({ email: email })
 		if (!user) throw new Err(404, 'User does not exist!')
 
