@@ -1,8 +1,11 @@
 import { NextFunction, Response } from 'express'
 
 import Group from '../models/group'
+import Profile from '../models/profile'
 import { Err } from '../util/classes'
 import { Req } from '../util/interfaces'
+
+// --------------------------- MEMBER ---------------------------
 
 export const getGroupPosts = async (
 	req: Req,
@@ -47,3 +50,28 @@ export const getGroupChat = async (
 		next(err)
 	}
 }
+
+export const requestToJoin = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const profileId: string = req.profileId!
+	const groupId: string = req.params.groupId
+
+	try {
+		const group = await Group.findById(groupId)
+		const profile = await Profile.findById(profileId)
+		if (!group) throw new Err(404, 'This group does not exist!')
+		if (group.participants.indexOf(profileId) >= 0) throw new Err(409, 'You are already member of this group!')
+		group.joinRequests.push(profile)
+		profile.requestsToJoinGroups.push(group)
+		await group.save()
+		await profile.save()
+	} catch (err) {
+		next (err)
+	}
+}
+
+
+// --------------------------- ADMIN ---------------------------
