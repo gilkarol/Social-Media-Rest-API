@@ -5,19 +5,21 @@ const profileSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		required: true,
 		ref: 'User',
-		unique: true
+		unique: true,
 	},
 	nickname: {
 		type: String,
 		required: true,
-		unique: true
+		unique: true,
 	},
 	imageUrl: String,
+	groups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
+	requestsToJoinGroups: [{ type: Schema.Types.ObjectId, ref: 'Group' }],
 	posts: [
 		{
-			type: Schema.Types.ObjectId, 
-			ref: 'Post'
-		}
+			type: Schema.Types.ObjectId,
+			ref: 'Post',
+		},
 	],
 	blockedProfiles: [
 		{
@@ -25,16 +27,18 @@ const profileSchema = new Schema({
 			ref: 'Profile',
 		},
 	],
-	friends: [{
-		type: Schema.Types.ObjectId,
-		ref: 'Profile'
-	}],
-    profilesWhoInvited: [
-        {
-            type: Schema.Types.ObjectId,
+	friends: [
+		{
+			type: Schema.Types.ObjectId,
 			ref: 'Profile',
-        }
-    ],
+		},
+	],
+	profilesWhoInvited: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Profile',
+		},
+	],
 	invitedProfiles: [
 		{
 			type: Schema.Types.ObjectId,
