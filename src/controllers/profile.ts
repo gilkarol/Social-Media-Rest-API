@@ -7,8 +7,6 @@ import { Req } from '../util/interfaces'
 
 import { isBlocked, hasBlocked } from '../util/functions'
 
-// ------------------------------------- PROFILES -------------------------------------
-
 export const getProfile = async (
 	req: Req,
 	res: Response,
@@ -43,4 +41,48 @@ export const getProfile = async (
 	}
 }
 
+export const postBlockProfile = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const profileId = req.params.profileId
+	const loggedProfileId = req.profileId!
+	try {
+		const loggedProfile = await Profile.findById(loggedProfileId)
+		const profile = await Profile.findById(profileId)
+		if (!profile) throw new Err(404, 'This profile does not exist!')
+		if (loggedProfile.blockedProfiles.indexOf(profileId) >= 0)
+			throw new Err(409, 'You already blocked this user!')
 
+		loggedProfile.blockedProfiles.push(profile)
+		await loggedProfile.save()
+
+		res.status(200).json({ message: 'User has been blocked successfully!' })
+	} catch (err) {
+		next(err)
+	}
+}
+
+export const postUnblockProfile = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const profileId = req.params.profileId
+	const loggedProfileId = req.profileId!
+	try {
+		const loggedProfile = await Profile.findById(loggedProfileId)
+		const profile = await Profile.findById(profileId)
+		if (!profile) throw new Err(404, 'This profile does not exist!')
+		if (loggedProfile.blockedProfiles.indexOf(profileId) == -1)
+			throw new Err(409, 'This profile is not blocked by you!')
+
+		loggedProfile.blockedProfiles.pull(profile)
+		await loggedProfile.save()
+
+		res.status(200).json({ message: 'User has been unblocked successfully!' })
+	} catch (err) {
+		next(err)
+	}
+}
