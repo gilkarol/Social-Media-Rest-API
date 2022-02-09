@@ -4,20 +4,6 @@ import Post from '../models/post'
 import Profile from '../models/profile'
 import { Req } from '../util/interfaces'
 
-export const getFriendsPosts = async (
-	req: Req,
-	res: Response,
-	next: NextFunction
-) => {
-	const profileId: string = req.profileId!
-	try {
-		
-		
-	} catch (err) {
-		next(err)
-	}
-}
-
 export const postPost = async (req: Req, res: Response, next: NextFunction) => {
 	const text = req.body.text
 	const profileId = req.profileId
