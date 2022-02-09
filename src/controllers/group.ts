@@ -73,5 +73,45 @@ export const postRequestToJoin = async (
 	}
 }
 
+export const postPost = async (req: Req, res: Response, next: NextFunction) => {
+
+}
+
+export const deletePost = async (req: Req, res: Response, next: NextFunction) => {
+
+} 
+
 
 // --------------------------- ADMIN ---------------------------
+
+const isAdmin = async () => {
+
+}
+
+export const postCreateGroup = async (req: Req, res: Response, next: NextFunction) => {
+
+}
+
+export const postGiveAdmin = async (req: Req, res: Response, next: NextFunction) => {
+
+}
+
+export const getRequestsToJoin = async (req: Req, res: Response, next: NextFunction) => {
+
+}
+
+export const acceptRequestToJoin = async (req: Req, res: Response, next: NextFunction) => {
+
+}
+
+export const declineRequestToJoin = async (req: Req, res: Response, next: NextFunction) => {
+
+}
+
+export const deleteRemoveProfileFromGroup = async (req: Req, res: Response, next: NextFunction) => {
+
+}
+
+export const deletePostAsAdmin = async (req: Req, res: Response, next: NextFunction) => {
+
+}
