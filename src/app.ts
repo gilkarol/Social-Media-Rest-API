@@ -9,6 +9,7 @@ import profileRoutes from './routes/profile'
 import privateChatRoutes from './routes/privateChat'
 import postRoutes from './routes/post'
 import friendRoutes from './routes/friend'
+import groupRoutes from './routes/group'
 
 import { Err } from './util/classes'
 
@@ -22,6 +23,7 @@ app.use('/auth', authRoutes)
 app.use('/chat', privateChatRoutes)
 app.use('/post', postRoutes)
 app.use('/friend', friendRoutes)
+app.use('/group', groupRoutes)
 
 
 app.use((error: Err, req: Request, res: Response, next: NextFunction) => {

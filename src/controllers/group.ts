@@ -51,7 +51,7 @@ export const getGroupChat = async (
 	}
 }
 
-export const requestToJoin = async (
+export const postRequestToJoin = async (
 	req: Req,
 	res: Response,
 	next: NextFunction
