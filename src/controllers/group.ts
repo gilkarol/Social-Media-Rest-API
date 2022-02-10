@@ -137,7 +137,23 @@ export const postCreateGroup = async (
 	req: Req,
 	res: Response,
 	next: NextFunction
-) => {}
+) => {
+	const profileId: string = req.profileId!
+	try {
+		const profile = await Profile.findById(profileId)
+		const group = new Group({
+			participants: profileId,
+			groupCreator: profileId,
+			admins: profileId,
+		})
+		profile.groups.push(group)
+		await group.save()
+		await profile.save()
+		res.status(201).json({ message: 'Group has been created successfully!' })
+	} catch (err) {
+		next(err)
+	}
+}
 
 export const postGiveAdmin = async (
 	req: Req,
