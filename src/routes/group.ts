@@ -25,4 +25,6 @@ router.post('/:groupId/giveAdmin/:profileId', isAuth, postGiveAdmin)
 
 router.get('/:groupId/joinRequests', isAuth, getRequestsToJoin)
 
+router.post('/:groupId/accept/:profileId', isAuth, getRequestsToJoin)
+
 export default router

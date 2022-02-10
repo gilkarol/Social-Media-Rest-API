@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose'
 
 const groupSchema = new Schema(
 	{
-		participants: [{ type: Schema.Types.ObjectId, ref: 'Profile' }],
+		members: [{ type: Schema.Types.ObjectId, ref: 'Profile' }],
 		posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
 		groupCreator: {type: Schema.Types.ObjectId, ref: 'Profile'},
 		admins: [{type: Schema.Types.ObjectId, ref: 'Profile'}],

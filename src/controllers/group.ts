@@ -18,7 +18,7 @@ export const getGroupPosts = async (
 	try {
 		const group = await Group.findById(groupId)
 		if (!group) throw new Err(404, 'Group has not been found!')
-		if (group.participants.indexOf(profileId) == -1)
+		if (group.members.indexOf(profileId) == -1)
 			throw new Err(409, 'You are not member of the group!')
 		const posts = group.posts
 
@@ -40,7 +40,7 @@ export const getGroupChat = async (
 	try {
 		const group = await Group.findById(groupId)
 		if (!group) throw new Err(404, 'Group has not been found!')
-		if (group.participants.indexOf(profileId) == -1)
+		if (group.members.indexOf(profileId) == -1)
 			throw new Err(409, 'You are not member of the group!')
 		const chat = group.chat
 		res
@@ -63,7 +63,7 @@ export const postRequestToJoin = async (
 		const group = await Group.findById(groupId)
 		const profile = await Profile.findById(profileId)
 		if (!group) throw new Err(404, 'This group does not exist!')
-		if (group.participants.indexOf(profileId) >= 0)
+		if (group.members.indexOf(profileId) >= 0)
 			throw new Err(409, 'You are already member of this group!')
 		group.joinRequests.push(profile)
 		profile.requestsToJoinGroups.push(group)
@@ -83,7 +83,7 @@ export const postPost = async (req: Req, res: Response, next: NextFunction) => {
 		const group = await Group.findById(groupId)
 		const profile = await Profile.findById(profileId)
 		if (!group) throw new Err(404, 'This group does not exist!')
-		if (group.participants.indexOf(profile) == -1)
+		if (group.members.indexOf(profile) == -1)
 			throw new Err(409, 'You are not the member of group!')
 		const post = new Post({
 			profile: profile,
@@ -135,7 +135,7 @@ export const postCreateGroup = async (
 	try {
 		const profile = await Profile.findById(profileId)
 		const group = new Group({
-			participants: profileId,
+			members: profileId,
 			groupCreator: profileId,
 			admins: profileId,
 		})
@@ -164,7 +164,7 @@ export const postGiveAdmin = async (
 		if (!group) throw new Err(404, 'This group does not exist!')
 		if (group.groupCreator.toString() !== loggedProfileId.toString())
 			throw new Err(409, 'You are not the creator of group!')
-		if (group.participants.indexOf(profileId) === -1)
+		if (group.members.indexOf(profileId) === -1)
 			throw new Err(409, 'This profile is not the member of group!')
 
 		group.admins.push(profile)
@@ -188,12 +188,10 @@ export const getRequestsToJoin = async (
 			throw new Err(409, 'You need to be admin to see requests to join!')
 		const requests = group.joinRequests
 
-		res
-			.status(200)
-			.json({
-				message: 'Requests to join found successfully!',
-				requests: requests,
-			})
+		res.status(200).json({
+			message: 'Requests to join found successfully!',
+			requests: requests,
+		})
 	} catch (err) {
 		next(err)
 	}
@@ -203,7 +201,33 @@ export const acceptRequestToJoin = async (
 	req: Req,
 	res: Response,
 	next: NextFunction
-) => {}
+) => {
+	const groupId: string = req.params.groupId
+	const loggedProfileId: string = req.profileId!
+	const profileId = req.params.profileId
+
+	try {
+		const group = await Group.findById(groupId)
+		const profile = await Profile.findById(profileId)
+
+		if (!profile) throw new Err(409, 'This profile does not exist!')
+		if (!group) throw new Err(404, 'This group does not exist!')
+		if (group.admins.indexOf(loggedProfileId) === -1)
+			throw new Err(409, 'You are not admin!')
+
+		group.joinRequest.pull(profileId)
+		group.members.push(profileId)
+		profile.requestsToJoinGroups.pull(group)
+
+		await group.save()
+		await profile.save()
+		res
+			.status(200)
+			.json({ message: 'Profile has been successfully added to the group!' })
+	} catch (err) {
+		next(err)
+	}
+}
 
 export const declineRequestToJoin = async (
 	req: Req,
