@@ -153,13 +153,34 @@ export const postCreateGroup = async (
 	} catch (err) {
 		next(err)
 	}
+
 }
 
 export const postGiveAdmin = async (
 	req: Req,
 	res: Response,
 	next: NextFunction
-) => {}
+) => {
+	const groupId: string = req.params.groupId
+	const loggedProfileId: string = req.profileId!
+	const profileId: string = req.params.profileId
+	try {
+		const group = await Group.findById(groupId)
+		const profile = await Profile.findById(profileId)
+
+		if (!profile) throw new Err(409, 'This profile does not exist!')
+		if (!group) throw new Err(404, 'This group does not exist!')
+		if (group.groupCreator.toString() !== loggedProfileId.toString())
+			throw new Err(409, 'You are not the creator of group!')
+		if (group.participants.indexOf(profileId) === -1)
+			throw new Err(409, 'This profile is not the member of group!')
+		
+		group.admins.push(profile)
+		await group.save()
+	} catch (err) {
+		next(err)
+	}
+}
 
 export const getRequestsToJoin = async (
 	req: Req,
