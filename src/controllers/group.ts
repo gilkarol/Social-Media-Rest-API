@@ -252,11 +252,9 @@ export const deleteDeclineRequestToJoin = async (
 
 		await group.save()
 		await profile.save()
-		res
-			.status(200)
-			.json({
-				message: 'Request to join group has been successfully declined!',
-			})
+		res.status(200).json({
+			message: 'Request to join group has been successfully declined!',
+		})
 	} catch (err) {
 		next(err)
 	}
@@ -266,7 +264,48 @@ export const deleteRemoveProfileFromGroup = async (
 	req: Req,
 	res: Response,
 	next: NextFunction
-) => {}
+) => {
+	const groupId: string = req.params.groupId
+	const loggedProfileId: string = req.profileId!
+	const profileId: string = req.params.profileId
+
+	try {
+		const group = await Group.findById(groupId)
+		const profile = await Profile.findById(profileId)
+
+		if (!profile) throw new Err(409, 'This profile does not exist!')
+		if (!group) throw new Err(404, 'This group does not exist!')
+		if (group.admins.indexOf(loggedProfileId) === -1)
+			throw new Err(409, 'You are not admin!')
+		if (group.admins.indexOf(profileId) >= 0) {
+			if (group.groupCreator != loggedProfileId)
+				throw new Err(
+					409,
+					'You need to be group creator to remove admin from group!'
+				)
+			group.admins.pull(profile)
+			group.members.pull(profile)
+			profile.groups.pull(group)
+			await group.save()
+			return res
+				.status(200)
+				.json({
+					message: 'Profile has been successfully removed from the group!',
+				})
+		}
+		profile.groups.pull(group)
+		group.members.pull(profileId)
+		await group.save()
+		await profile.save()
+		res
+			.status(200)
+			.json({
+				message: 'Profile has been successfully removed from the group!',
+			})
+	} catch (err) {
+		next(err)
+	}
+}
 
 export const deletePostAsAdmin = async (
 	req: Req,
