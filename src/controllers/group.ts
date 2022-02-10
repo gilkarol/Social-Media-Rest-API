@@ -126,7 +126,12 @@ export const deletePost = async (
 
 // --------------------------- ADMIN ---------------------------
 
-const isAdmin = async () => {}
+const isAdmin = async (groupId: string, profileId: string) => {
+	const group = await Group.findById(groupId)
+	if (!group) throw new Err(404, 'This group does not exist!')
+	if (group.admins.indexOf(profileId) === -1) return false
+	return true
+}
 
 export const postCreateGroup = async (
 	req: Req,
