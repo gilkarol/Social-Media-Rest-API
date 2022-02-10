@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { deletePost, getGroupChat, getGroupPosts, getRequestsToJoin, postCreateGroup, postGiveAdmin, postPost, postRequestToJoin } from '../controllers/group'
+import { deleteDeclineRequestToJoin, deletePost, getGroupChat, getGroupPosts, getRequestsToJoin, postAcceptRequestToJoin, postCreateGroup, postGiveAdmin, postPost, postRequestToJoin } from '../controllers/group'
 
 import isAuth from '../middleware/is-auth'
 
@@ -25,6 +25,9 @@ router.post('/:groupId/giveAdmin/:profileId', isAuth, postGiveAdmin)
 
 router.get('/:groupId/joinRequests', isAuth, getRequestsToJoin)
 
-router.post('/:groupId/accept/:profileId', isAuth, getRequestsToJoin)
+router.post('/:groupId/accept/:profileId', isAuth, postAcceptRequestToJoin)
+
+router.delete('/:groupId/decline/:profileId', isAuth, deleteDeclineRequestToJoin)
+
 
 export default router

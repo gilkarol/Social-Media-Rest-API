@@ -197,7 +197,7 @@ export const getRequestsToJoin = async (
 	}
 }
 
-export const acceptRequestToJoin = async (
+export const postAcceptRequestToJoin = async (
 	req: Req,
 	res: Response,
 	next: NextFunction
@@ -229,11 +229,38 @@ export const acceptRequestToJoin = async (
 	}
 }
 
-export const declineRequestToJoin = async (
+export const deleteDeclineRequestToJoin = async (
 	req: Req,
 	res: Response,
 	next: NextFunction
-) => {}
+) => {
+	const groupId: string = req.params.groupId
+	const loggedProfileId: string = req.profileId!
+	const profileId = req.params.profileId
+
+	try {
+		const group = await Group.findById(groupId)
+		const profile = await Profile.findById(profileId)
+
+		if (!profile) throw new Err(409, 'This profile does not exist!')
+		if (!group) throw new Err(404, 'This group does not exist!')
+		if (group.admins.indexOf(loggedProfileId) === -1)
+			throw new Err(409, 'You are not admin!')
+
+		group.joinRequest.pull(profileId)
+		profile.requestsToJoinGroups.pull(group)
+
+		await group.save()
+		await profile.save()
+		res
+			.status(200)
+			.json({
+				message: 'Request to join group has been successfully declined!',
+			})
+	} catch (err) {
+		next(err)
+	}
+}
 
 export const deleteRemoveProfileFromGroup = async (
 	req: Req,
