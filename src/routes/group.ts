@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { deleteDeclineRequestToJoin, deletePost, deleteRemoveProfileFromGroup, getGroupChat, getGroupPosts, getRequestsToJoin, postAcceptRequestToJoin, postCreateGroup, postGiveAdmin, postPost, postRequestToJoin } from '../controllers/group'
+import { deleteDeclineRequestToJoin, deletePost, deletePostAsAdmin, deleteRemoveProfileFromGroup, getGroupChat, getGroupPosts, getRequestsToJoin, postAcceptRequestToJoin, postCreateGroup, postGiveAdmin, postPost, postRequestToJoin } from '../controllers/group'
 
 import isAuth from '../middleware/is-auth'
 
@@ -31,5 +31,6 @@ router.delete('/:groupId/decline/:profileId', isAuth, deleteDeclineRequestToJoin
 
 router.delete('/:groupId/remove/:profileId', isAuth, deleteRemoveProfileFromGroup)
 
+router.delete('/:groupId/delete/:postId', isAuth, deletePostAsAdmin)
 
 export default router
