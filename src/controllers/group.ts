@@ -101,7 +101,28 @@ export const deletePost = async (
 	req: Req,
 	res: Response,
 	next: NextFunction
-) => {}
+) => {
+	const postId: string = req.params.postId
+	const groupId: string = req.params.groupId
+	const profileId: string = req.profileId!
+
+	try {
+		const post = await Post.findById(postId)
+		const group = await Group.findById(groupId)
+		if (!group) throw new Err(404, 'This group does not exist!')
+		if (post.profile.toString() !== profileId.toString())
+			throw new Err(409, 'You are not the creator of post!')
+
+		group.posts.pull(post)
+
+		await post.remove()
+		await group.save()
+
+		res.status(200).json({ message: 'Post has been deleted successfully!' })
+	} catch (err) {
+		next(err)
+	}
+}
 
 // --------------------------- ADMIN ---------------------------
 
