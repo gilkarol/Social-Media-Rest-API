@@ -97,6 +97,34 @@ export const postPost = async (req: Req, res: Response, next: NextFunction) => {
 	}
 }
 
+export const patchPost = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
+	const postId: string = req.params.postId
+	const groupId: string = req.params.groupId
+	const profileId: string = req.profileId!
+	const text: string = req.body.text
+
+	try {
+		const post = await Post.findById(postId)
+		if (!post) throw new Err(404, 'This post does not exist!')
+		const group = await Group.findById(groupId)
+		if (!group) throw new Err(404, 'This group does not exist!')
+		if (group.posts.indexOf(postId) === -1)
+			throw new Err(409, 'This post does not exist in this group!')
+		if (post.profile.toString() !== profileId.toString())
+			throw new Err(409, 'This profile is not creator of post!')
+		post.text = text
+
+		await post.save()
+		res.status(200).json({ message: 'Post updated successfully!' })
+	} catch (err) {
+		next(err)
+	}
+}
+
 export const deletePost = async (
 	req: Req,
 	res: Response,
@@ -287,21 +315,17 @@ export const deleteRemoveProfileFromGroup = async (
 			group.members.pull(profile)
 			profile.groups.pull(group)
 			await group.save()
-			return res
-				.status(200)
-				.json({
-					message: 'Profile has been successfully removed from the group!',
-				})
+			return res.status(200).json({
+				message: 'Profile has been successfully removed from the group!',
+			})
 		}
 		profile.groups.pull(group)
 		group.members.pull(profileId)
 		await group.save()
 		await profile.save()
-		res
-			.status(200)
-			.json({
-				message: 'Profile has been successfully removed from the group!',
-			})
+		res.status(200).json({
+			message: 'Profile has been successfully removed from the group!',
+		})
 	} catch (err) {
 		next(err)
 	}
@@ -321,15 +345,19 @@ export const deletePostAsAdmin = async (
 		const post = await Post.findById(postId)
 		if (!post) throw new Err(404, 'This post does not exist!')
 		if (!group) throw new Err(404, 'This group does not exist!')
-		if (group.admins.indexOf(profileId) === -1) throw new Err(409, 'You are not admin of the group!')
-		if (group.posts.indexOf(profileId) === -1) throw new Err(409, 'This post does not exist in this group!')
+		if (group.admins.indexOf(profileId) === -1)
+			throw new Err(409, 'You are not admin of the group!')
+		if (group.posts.indexOf(profileId) === -1)
+			throw new Err(409, 'This post does not exist in this group!')
 
 		group.posts.pull(post)
 		await post.remove()
 		await group.save()
 
-		res.status(200).json({message: 'Post has been succesffully removed from the group!'})
+		res
+			.status(200)
+			.json({ message: 'Post has been succesffully removed from the group!' })
 	} catch (err) {
-		next (err)
+		next(err)
 	}
 }
