@@ -3,11 +3,13 @@ import mongoose, { Schema } from 'mongoose'
 const groupSchema = new Schema(
 	{
 		members: [{ type: Schema.Types.ObjectId, ref: 'Profile' }],
+		title: { type: String, required: true },
+		description: String,
 		posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
-		groupCreator: {type: Schema.Types.ObjectId, ref: 'Profile'},
-		admins: [{type: Schema.Types.ObjectId, ref: 'Profile'}],
+		groupCreator: { type: Schema.Types.ObjectId, ref: 'Profile' },
+		admins: [{ type: Schema.Types.ObjectId, ref: 'Profile' }],
 		chat: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
-		joinRequests: [{type: Schema.Types.ObjectId, ref: 'Profile'}]
+		joinRequests: [{ type: Schema.Types.ObjectId, ref: 'Profile' }],
 	},
 	{ timestamps: true }
 )

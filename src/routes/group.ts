@@ -1,11 +1,13 @@
 import { Router } from 'express'
-import { deleteDeclineRequestToJoin, deletePost, deletePostAsAdmin, deleteRemoveProfileFromGroup, deleteRequestToJoin, getGroupChat, getGroupPosts, getRequestsToJoin, patchPost, postAcceptRequestToJoin, postCreateGroup, postGiveAdmin, postPost, postRequestToJoin } from '../controllers/group'
+import { deleteDeclineRequestToJoin, deletePost, deletePostAsAdmin, deleteRemoveProfileFromGroup, deleteRequestToJoin, getGroupChat, getGroupInfo, getGroupPosts, getRequestsToJoin, patchPost, postAcceptRequestToJoin, postCreateGroup, postGiveAdmin, postPost, postRequestToJoin } from '../controllers/group'
 
 import isAuth from '../middleware/is-auth'
 
 const router = Router()
 
 // ------------------------- MEMBERS --------------------------------
+
+router.get('/:groupId', isAuth, getGroupInfo)
 
 router.get('/:groupId/posts', isAuth, getGroupPosts)
 
