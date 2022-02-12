@@ -8,7 +8,7 @@ const groupSchema = new Schema(
 		posts: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
 		groupCreator: { type: Schema.Types.ObjectId, ref: 'Profile' },
 		admins: [{ type: Schema.Types.ObjectId, ref: 'Profile' }],
-		chat: [{ type: Schema.Types.ObjectId, ref: 'Message' }],
+		chat: { type: Schema.Types.ObjectId, ref: 'GroupChat' },
 		joinRequests: [{ type: Schema.Types.ObjectId, ref: 'Profile' }],
 	},
 	{ timestamps: true }

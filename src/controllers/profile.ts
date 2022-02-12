@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express'
-import PrivateChat from '../models/chat'
+import PrivateChat from '../models/privateChat'
 
 import Profile from '../models/profile'
 import { Err } from '../util/classes'

@@ -1,5 +1,6 @@
 import { NextFunction, Response } from 'express'
 
+import GroupChat from '../models/groupChat'
 import Group from '../models/group'
 import Post from '../models/post'
 import Profile from '../models/profile'
@@ -202,7 +203,7 @@ export const getGroupChat = async (
 		if (!group) throw new Err(404, 'Group has not been found!')
 		if (group.members.indexOf(profileId) == -1)
 			throw new Err(409, 'You are not member of the group!')
-		const chat = group.chat
+		const chat = group.chat.populate('chat')
 		res
 			.status(200)
 			.json({ message: 'Chat has been found successfully!', chat: chat })
@@ -227,12 +228,17 @@ export const postCreateGroup = async (
 	const profileId: string = req.profileId!
 	try {
 		const profile = await Profile.findById(profileId)
+		const chat = new GroupChat({
+			members: profile
+		})
 		const group = new Group({
 			members: profileId,
 			groupCreator: profileId,
 			admins: profileId,
+			chat: chat
 		})
 		profile.groups.push(group)
+		await chat.save()
 		await group.save()
 		await profile.save()
 		res.status(201).json({ message: 'Group has been created successfully!' })
