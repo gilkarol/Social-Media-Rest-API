@@ -95,17 +95,21 @@ export const postAcceptRequestToJoin = async (
 	try {
 		const group = await Group.findById(groupId)
 		const profile = await Profile.findById(profileId)
+        const chat = await GroupChat.findOne({group: groupId})
 
 		if (!profile) throw new Err(409, 'This profile does not exist!')
 		if (!group) throw new Err(404, 'This group does not exist!')
+		if (!chat) throw new Err(404, 'This chat does not exist!')
 		if (group.admins.indexOf(loggedProfileId) === -1)
 			throw new Err(409, 'You are not admin!')
 
 		group.joinRequest.pull(profileId)
 		group.members.push(profileId)
+        chat.participants.push(profileId)
 		profile.requestsToJoinGroups.pull(group)
 
 		await group.save()
+        await chat.save()
 		await profile.save()
 		res
 			.status(200)
@@ -158,9 +162,11 @@ export const deleteRemoveProfileFromGroup = async (
 	try {
 		const group = await Group.findById(groupId)
 		const profile = await Profile.findById(profileId)
+        const chat = await GroupChat.findOne({group: groupId})
 
 		if (!profile) throw new Err(409, 'This profile does not exist!')
 		if (!group) throw new Err(404, 'This group does not exist!')
+		if (!chat) throw new Err(404, 'This chat does not exist!')
 		if (group.admins.indexOf(loggedProfileId) === -1)
 			throw new Err(409, 'You are not admin!')
 		if (group.admins.indexOf(profileId) >= 0) {
@@ -171,8 +177,10 @@ export const deleteRemoveProfileFromGroup = async (
 				)
 			group.admins.pull(profile)
 			group.members.pull(profile)
+            chat.participants.pull(profile)
 			profile.groups.pull(group)
 			await group.save()
+            await chat.save()
 			return res.status(200).json({
 				message: 'Profile has been successfully removed from the group!',
 			})

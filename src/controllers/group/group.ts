@@ -7,7 +7,6 @@ import Profile from '../../models/profile'
 import { Err } from '../../util/classes'
 import { Req } from '../../util/interfaces'
 
-
 export const getGroupInfo = async (
 	req: Req,
 	res: Response,
@@ -198,11 +197,10 @@ export const getGroupChat = async (
 	const groupId: string = req.params.groupId!
 	const profileId: string = req.profileId!
 	try {
-		const group = await Group.findById(groupId)
-		if (!group) throw new Err(404, 'Group has not been found!')
-		if (group.members.indexOf(profileId) == -1)
-			throw new Err(409, 'You are not member of the group!')
-		const chat = group.chat.populate('chat')
+		const chat = await GroupChat.findOne({ group: groupId })
+		if (!chat) throw new Err(404, 'Chat has not been found!')
+		if (chat.participants.indexOf(profileId) == -1)
+			throw new Err(409, 'You are not allowed to view this chat!')
 		res
 			.status(200)
 			.json({ message: 'Chat has been found successfully!', chat: chat })
