@@ -196,34 +196,3 @@ export const deleteRemoveProfileFromGroup = async (
 		next(err)
 	}
 }
-
-export const deletePostAsAdmin = async (
-	req: Req,
-	res: Response,
-	next: NextFunction
-) => {
-	const postId: string = req.params.postId
-	const groupId: string = req.params.groupId
-	const profileId: string = req.profileId!
-
-	try {
-		const group = await Group.findById(groupId)
-		const post = await Post.findById(postId)
-		if (!post) throw new Err(404, 'This post does not exist!')
-		if (!group) throw new Err(404, 'This group does not exist!')
-		if (group.admins.indexOf(profileId) === -1)
-			throw new Err(409, 'You are not admin of the group!')
-		if (group.posts.indexOf(profileId) === -1)
-			throw new Err(409, 'This post does not exist in this group!')
-
-		group.posts.pull(post)
-		await post.remove()
-		await group.save()
-
-		res
-			.status(200)
-			.json({ message: 'Post has been succesffully removed from the group!' })
-	} catch (err) {
-		next(err)
-	}
-}

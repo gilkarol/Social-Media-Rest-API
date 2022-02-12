@@ -12,7 +12,6 @@ import {
 
 import {
 	deleteDeclineRequestToJoin,
-	deletePostAsAdmin,
 	deleteRemoveProfileFromGroup,
 	getRequestsToJoin,
 	postAcceptRequestToJoin,
@@ -63,7 +62,5 @@ router.delete(
 	isAuth,
 	deleteRemoveProfileFromGroup
 )
-
-router.delete('/:groupId/delete/:postId', isAuth, deletePostAsAdmin)
 
 export default router

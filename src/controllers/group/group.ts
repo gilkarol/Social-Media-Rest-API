@@ -122,7 +122,7 @@ export const deletePost = async (
 		const post = await Post.findById(postId)
 		const group = await Group.findById(groupId)
 		if (!group) throw new Err(404, 'This group does not exist!')
-		if (post.profile.toString() !== profileId.toString())
+		if (post.profile.toString() !== profileId.toString() && group.admins.indexOf(profileId) === -1)
 			throw new Err(409, 'You are not the creator of post!')
 
 		group.posts.pull(post)
