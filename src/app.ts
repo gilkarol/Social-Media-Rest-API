@@ -6,7 +6,7 @@ import dotenv from 'dotenv'
 import authRoutes from './routes/auth'
 import profileRoutes from './routes/profile'
 
-import privateChatRoutes from './routes/privateChat'
+import privateChatRoutes from './routes/chat'
 import postRoutes from './routes/post'
 import friendRoutes from './routes/friend'
 import groupRoutes from './routes/group'

@@ -8,7 +8,11 @@ import { Req } from '../util/interfaces'
 
 // --------------------------- MEMBER ---------------------------
 
-export const getGroupInfo = async (req: Req, res: Response, next: NextFunction) => {
+export const getGroupInfo = async (
+	req: Req,
+	res: Response,
+	next: NextFunction
+) => {
 	const profileId: string = req.profileId!
 	const groupId: string = req.params.groupId
 
@@ -18,15 +22,13 @@ export const getGroupInfo = async (req: Req, res: Response, next: NextFunction) 
 		if (!group) throw new Err(404, 'This group does not exist!')
 		const isMember = group.members.indexOf(profile) >= 0
 		const requestedToJoin = group.joinRequests.indexOf(profile) >= 0
-		res
-			.status(200)
-			.json({
-				message: 'Group info found successfully!',
-				title: group.title,
-				description: group.description,
-				isMember: isMember,
-				requestedToJoin: requestedToJoin,
-			})
+		res.status(200).json({
+			message: 'Group info found successfully!',
+			title: group.title,
+			description: group.description,
+			isMember: isMember,
+			requestedToJoin: requestedToJoin,
+		})
 	} catch (err) {
 		next(err)
 	}

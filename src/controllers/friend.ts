@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express'
-import PrivateChat from '../models/privateChat'
+import PrivateChat from '../models/chat'
 
 import Profile from '../models/profile'
 import { Err } from '../util/classes'
@@ -101,10 +101,12 @@ export const postInviteToFriends = async (
 
 			let privateChat = await PrivateChat.findOne({
 				participants: [loggedProfile, profile],
+				groupChat: false
 			})
 			if (!privateChat) {
 				privateChat = new PrivateChat({
 					participants: [loggedProfile, profile],
+					groupChat: false
 				})
 			}
 
@@ -156,13 +158,14 @@ export const postAcceptInviteToFriends = async (
 		loggedProfile.friends.push(profile)
 
 		let privateChat = await PrivateChat.findOne({
-			participants: loggedProfile,
-			profile,
+			participants: [loggedProfile, profile],
+			groupChat: false
 		})
 
 		if (!privateChat) {
 			privateChat = new PrivateChat({
 				participants: [loggedProfile, profile],
+				groupChat: false
 			})
 		}
 

@@ -1,6 +1,6 @@
 import { NextFunction, Response } from 'express'
 import Message from '../models/message'
-import PrivateChat from '../models/privateChat'
+import PrivateChat from '../models/chat'
 import { Err } from '../util/classes'
 
 import { Req } from '../util/interfaces'
@@ -11,6 +11,7 @@ export const getChat = async (req: Req, res: Response, next: NextFunction) => {
 	try {
 		const chat = await PrivateChat.findOne({
 			participants: { profileId, loggedProfileId },
+			groupChat: false
 		})
 		res.status(200).json({ message: 'Found chat successfully!', chat: chat })
 	} catch (err) {
