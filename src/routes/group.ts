@@ -1,5 +1,24 @@
 import { Router } from 'express'
-import { deleteDeclineRequestToJoin, deletePost, deletePostAsAdmin, deleteRemoveProfileFromGroup, deleteRequestToJoin, getGroupChat, getGroupInfo, getGroupPosts, getRequestsToJoin, patchPost, postAcceptRequestToJoin, postCreateGroup, postGiveAdmin, postPost, postRequestToJoin } from '../controllers/group'
+import {
+	deletePost,
+	deleteRequestToJoin,
+	getGroupChat,
+	getGroupInfo,
+	getGroupPosts,
+	patchPost,
+	postPost,
+	postRequestToJoin,
+} from '../controllers/group/group'
+
+import {
+	deleteDeclineRequestToJoin,
+	deletePostAsAdmin,
+	deleteRemoveProfileFromGroup,
+	getRequestsToJoin,
+	postAcceptRequestToJoin,
+	postCreateGroup,
+	postGiveAdmin,
+} from '../controllers/group/groupAdmin'
 
 import isAuth from '../middleware/is-auth'
 
@@ -15,7 +34,7 @@ router.post('/:groupId/post', isAuth, postPost)
 
 router.delete('/:groupId/post/:postId', isAuth, deletePost)
 
-router.patch('/:groupId/post/:postId',isAuth, patchPost)
+router.patch('/:groupId/post/:postId', isAuth, patchPost)
 
 router.get('/chat/:groupId', isAuth, getGroupChat)
 
@@ -33,9 +52,17 @@ router.get('/:groupId/joinRequests', isAuth, getRequestsToJoin)
 
 router.post('/:groupId/accept/:profileId', isAuth, postAcceptRequestToJoin)
 
-router.delete('/:groupId/decline/:profileId', isAuth, deleteDeclineRequestToJoin)
+router.delete(
+	'/:groupId/decline/:profileId',
+	isAuth,
+	deleteDeclineRequestToJoin
+)
 
-router.delete('/:groupId/remove/:profileId', isAuth, deleteRemoveProfileFromGroup)
+router.delete(
+	'/:groupId/remove/:profileId',
+	isAuth,
+	deleteRemoveProfileFromGroup
+)
 
 router.delete('/:groupId/delete/:postId', isAuth, deletePostAsAdmin)
 
