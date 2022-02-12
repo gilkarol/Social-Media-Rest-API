@@ -1,5 +1,5 @@
 import { NextFunction, Response } from 'express'
-import Message from '../models/message'
+import PrivateMessage from '../models/privateMessage'
 import PrivateChat from '../models/privateChat'
 import { Err } from '../util/classes'
 
@@ -10,8 +10,7 @@ export const getChat = async (req: Req, res: Response, next: NextFunction) => {
 	const loggedProfileId: string = req.profileId!
 	try {
 		const chat = await PrivateChat.findOne({
-			participants: { profileId, loggedProfileId },
-			groupChat: false
+			participants: [profileId, loggedProfileId]
 		})
 		res.status(200).json({ message: 'Found chat successfully!', chat: chat })
 	} catch (err) {
@@ -36,10 +35,10 @@ export const postMessage = async (
 			participants: loggedProfileId && profileId,
 		})
 		if (!chat) throw new Err(404, 'This chat does not exist!')
-		const message = new Message({
-			profileCreator: loggedProfileId,
+		const message = new PrivateMessage({
+			creator: loggedProfileId,
 			message: text,
-			messageToProfile: profileId,
+			chat: chat
 		})
 		chat.messages.push(message)
 		await message.save()
@@ -61,7 +60,7 @@ export const patchMessage = async (
 	const text: string = req.body.text
 
 	try {
-		const message = await Message.findById(messageId)
+		const message = await PrivateMessage.findById(messageId)
 		if (!message) throw new Err(404, 'This message does not exist!')
 		if (message.profile.toString() !== loggedProfileId.toString())
 			throw new Err(401, 'This user is not the creator of message!')
@@ -82,7 +81,7 @@ export const deleteMessage = async (
 	const messageId: string = req.params.messageId
 
 	try {
-		const message = await Message.findById(messageId)
+		const message = await PrivateMessage.findById(messageId)
 		const chat = await PrivateChat.findOne({ messages: message })
 		if (!chat) throw new Err(404, 'Chat not found!')
 		if (message.profile.toString() !== loggedProfileId.toString())

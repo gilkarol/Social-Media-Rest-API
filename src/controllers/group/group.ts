@@ -6,6 +6,7 @@ import Post from '../../models/post'
 import Profile from '../../models/profile'
 import { Err } from '../../util/classes'
 import { Req } from '../../util/interfaces'
+import GroupMessage from '../../models/groupMessage'
 
 export const getGroupInfo = async (
 	req: Req,
@@ -213,4 +214,27 @@ export const postGroupMessage = async (
 	req: Req,
 	res: Response,
 	next: NextFunction
-) => {}
+) => {
+	const groupId: string = req.params.groupId!
+	const profileId: string = req.profileId!
+	const text: string = req.body.text
+	try {
+		const chat = await GroupChat.findOne({ group: groupId })
+		if (!chat) throw new Err(404, 'Chat has not been found!')
+		if (chat.participants.indexOf(profileId) == -1)
+			throw new Err(409, 'You are not allowed to view this chat!')
+
+		const groupMessage = new GroupMessage({
+			creator: profileId,
+			message: text,
+			group: groupId
+		})
+		await groupMessage.save()
+		await chat.save()
+		res
+			.status(200)
+			.json({ message: 'Group message has been send successfully!' })
+	} catch (err) {
+		next(err)
+	}
+}
