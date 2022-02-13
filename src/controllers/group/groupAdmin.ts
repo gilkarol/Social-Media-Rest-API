@@ -2,7 +2,6 @@ import { NextFunction, Response } from 'express'
 
 import GroupChat from '../../models/groupChat'
 import Group from '../../models/group'
-import Post from '../../models/post'
 import Profile from '../../models/profile'
 import { Err } from '../../util/classes'
 import { Req } from '../../util/interfaces'
