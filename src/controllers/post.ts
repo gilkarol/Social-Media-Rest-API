@@ -55,3 +55,20 @@ export const patchPost = async (req: Req, res: Response, next: NextFunction) => 
 	}
 }
 
+export const deletePost = async (req: Req, res: Response, next: NextFunction) => {
+	const postId: string = req.params.postId
+	const profileId: string = req.profileId!
+	try {
+		const profile = await Profile.findById(profileId)
+		const post = await Post.findById(postId)
+		if (!post) throw new Err(404, 'This post does not exist!')
+		if (profile.posts.indexOf(post) === -1) throw new Err(409, 'You are not creator of the post!')
+		profile.posts.pull(post)
+		await post.remove()
+		await profile.save()
+		res.status(200).json({ message: 'Post deleted successfully!' })
+	} catch (err) {
+		next(err)
+	}
+}
+
