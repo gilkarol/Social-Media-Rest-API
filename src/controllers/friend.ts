@@ -27,6 +27,7 @@ export const getFriends = async (
 		res.status(200).json({
 			message: 'Friends found successfully!',
 			friends: profile.friends,
+			countFriends: profile.friends.length
 		})
 	} catch (err) {
 		next(err)
